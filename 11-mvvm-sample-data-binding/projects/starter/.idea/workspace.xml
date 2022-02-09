@@ -38,9 +38,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bfb7d72d-bef2-4e35-b71b-74742b56e6b4" name="Default Changelist" comment="Add MVVVM Architecture with two way dataBinding.">
-      <change beforePath="$PROJECT_DIR$/../../../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../../README.md" afterDir="false" />
-    </list>
+    <list default="true" id="bfb7d72d-bef2-4e35-b71b-74742b56e6b4" name="Default Changelist" comment="Add MVVVM Architecture with two way dataBinding." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -214,10 +212,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1491" height="210" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1644443367630" />
-    <state x="361" y="145" key="Vcs.Push.Dialog.v2" timestamp="1644446109038">
+    <state x="361" y="145" key="Vcs.Push.Dialog.v2" timestamp="1644446389929">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="361" y="145" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1644446109038" />
+    <state x="361" y="145" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1644446389929" />
     <state x="474" y="145" width="588" height="534" key="find.popup" timestamp="1644442902850">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
