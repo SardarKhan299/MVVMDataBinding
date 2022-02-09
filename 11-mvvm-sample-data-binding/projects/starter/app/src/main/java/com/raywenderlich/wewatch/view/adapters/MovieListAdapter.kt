@@ -30,14 +30,18 @@
 
 package com.raywenderlich.wewatch.view.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.raywenderlich.wewatch.R
 import com.raywenderlich.wewatch.data.model.Movie
 import com.raywenderlich.wewatch.data.net.RetrofitClient
+import com.raywenderlich.wewatch.databinding.ItemMovieMainBinding
+import com.raywenderlich.wewatch.setImageUrl
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_movie_main.view.*
 import java.util.*
@@ -48,15 +52,38 @@ class MovieListAdapter(private val movies: MutableList<Movie>)
   val selectedMovies = HashSet<Movie>()
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieHolder {
-    val view = LayoutInflater.from(parent.context)
-        .inflate(R.layout.item_movie_main, parent, false)
-    return MovieHolder(view)
+    val layoutInflater = LayoutInflater.from(parent.context)
+    val binding = DataBindingUtil.inflate<ItemMovieMainBinding>(layoutInflater,R.layout.item_movie_main, parent, false)
+        //.inflate(R.layout.item_movie_main, parent, false)
+    return MovieHolder(binding)
   }
 
   override fun getItemCount(): Int = movies.size
 
   override fun onBindViewHolder(holder: MovieHolder, position: Int) {
-    holder.bind(movies[position])
+    Log.d(MovieListAdapter::class.simpleName, "onBindViewHolder: ")
+    val movie = movies[position]
+    holder.binding.movie = movie
+    //4
+    holder.binding.checkbox.setOnCheckedChangeListener{ checkbox, isChecked
+      ->
+      if (!selectedMovies.contains(movie) && isChecked) {
+        selectedMovies.add(movies[position])
+      }else{
+        selectedMovies.remove(movies[position])
+      }
+    }
+    //5
+    holder.binding.checkbox.isChecked = selectedMovies.contains(movie)
+    //holder.bind(movies[position])
+
+    if (movie.posterPath != null) {
+      holder.binding.movieImageView.setImageUrl(
+              RetrofitClient.TMDB_IMAGEURL + movie.posterPath)
+    } else {
+      holder.binding.movieImageView.setImageUrl(
+              R.drawable.ic_local_movies_gray)
+    }
   }
 
   fun setMovies(movieList: List<Movie>) {
@@ -65,9 +92,9 @@ class MovieListAdapter(private val movies: MutableList<Movie>)
     notifyDataSetChanged()
   }
 
-  inner class MovieHolder(val view: View) : RecyclerView.ViewHolder(view) {
+  inner class MovieHolder(val binding: ItemMovieMainBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(movie: Movie) = with(view) {
+    fun bind(movie: Movie) = with(binding.root) {
       movieTitleTextView.text = movie.title
       movieReleaseDateTextView.text = movie.releaseDate
       checkbox.isChecked = movie.watched

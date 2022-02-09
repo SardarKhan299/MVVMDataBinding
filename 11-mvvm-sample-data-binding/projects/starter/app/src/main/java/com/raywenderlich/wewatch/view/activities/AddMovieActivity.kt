@@ -31,13 +31,17 @@
 package com.raywenderlich.wewatch.view.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.Toolbar
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import com.raywenderlich.wewatch.R
 import com.raywenderlich.wewatch.action
 import com.raywenderlich.wewatch.data.model.Movie
+import com.raywenderlich.wewatch.databinding.ActivityAddBinding
 import com.raywenderlich.wewatch.snack
 import com.raywenderlich.wewatch.viewmodel.AddViewModel
 import kotlinx.android.synthetic.main.activity_add.*
@@ -61,9 +65,27 @@ class AddMovieActivity : BaseActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_add)
+    val binding = DataBindingUtil.setContentView<ActivityAddBinding>(this,R.layout.activity_add)
+    //setContentView(R.layout.activity_add)
     viewModel = ViewModelProviders.of(this).get(AddViewModel::class.java)
+    binding.viewModel = viewModel
+    configureLiveDataObservers()
 
+  }
+
+  private fun configureLiveDataObservers() {
+    viewModel.getSaveLiveData().observe(this, Observer { saved ->
+      Log.d(AddMovieActivity::class.simpleName, "configureLiveDataObservers: ")
+      saved?.let {
+        if (saved) {
+          Log.d(AddMovieActivity::class.simpleName, "configureLiveDataObservers: ")
+          finish()
+        } else {
+          Log.d(AddMovieActivity::class.simpleName, "configureLiveDataObservers: error")
+          showMessage(getString(R.string.enter_title))
+        }
+      }
+    })
   }
 
   private fun showMessage(msg: String) {
@@ -75,7 +97,7 @@ class AddMovieActivity : BaseActivity() {
 
   fun addMovieClicked(view: View) {
     if (titleEditText.text.toString().isNotBlank()) {
-      viewModel.saveMovie(Movie(title = titleEditText.text.toString(), releaseDate = yearEditText.text.toString()))
+      viewModel.saveMovie()
       finish()
     } else {
       showMessage(getString(R.string.enter_title))

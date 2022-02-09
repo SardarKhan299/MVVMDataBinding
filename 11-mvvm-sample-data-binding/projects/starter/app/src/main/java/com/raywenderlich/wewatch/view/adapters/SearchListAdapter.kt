@@ -30,29 +30,52 @@
 
 package com.raywenderlich.wewatch.view.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.raywenderlich.wewatch.R
 import com.raywenderlich.wewatch.data.model.Movie
 import com.raywenderlich.wewatch.data.net.RetrofitClient
+import com.raywenderlich.wewatch.databinding.ItemMovieMainBinding
+import com.raywenderlich.wewatch.databinding.ItemMovieSearchBinding
+import com.raywenderlich.wewatch.setImageUrl
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_movie_search.view.*
 
 class SearchListAdapter(private val movies: MutableList<Movie>,
                         private var listener: (Movie) -> Unit) : RecyclerView.Adapter<SearchListAdapter.MovieHolder>() {
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieHolder {
-    val view = LayoutInflater.from(parent.context)
-        .inflate(R.layout.item_movie_search, parent, false)
-    return MovieHolder(view)
+    val layoutInflater = LayoutInflater.from(parent.context)
+    val binding = DataBindingUtil.inflate<ItemMovieSearchBinding>(layoutInflater,R.layout.item_movie_search, parent, false)
+    //.inflate(R.layout.item_movie_main, parent, false)
+    return MovieHolder(binding)
+//    val view = LayoutInflater.from(parent.context)
+//        .inflate(R.layout.item_movie_search, parent, false)
+//    return MovieHolder(view)
   }
 
   override fun getItemCount(): Int = movies.size
 
   override fun onBindViewHolder(holder: MovieHolder, position: Int) {
-      holder.bind(movies[position], position)
+    Log.d(SearchListAdapter::class.simpleName, "onBindViewHolder: ")
+    val movie = movies[position]
+    holder.binding.movie = movie
+
+    if (movie.posterPath != null) {
+      holder.binding.searchImageView.setImageUrl(
+              RetrofitClient.TMDB_IMAGEURL + movie.posterPath)
+    } else {
+      holder.binding.searchImageView.setImageUrl(
+              R.drawable.ic_local_movies_gray)
+    }
+    holder.binding.root.setOnClickListener {
+      Log.d(SearchListAdapter::class.simpleName, "onBindViewHolder: ")
+      listener(movies.get(position)) }
+    
   }
 
   fun setMovies(movieList: List<Movie>) {
@@ -62,11 +85,11 @@ class SearchListAdapter(private val movies: MutableList<Movie>,
   }
 
 
-  inner class MovieHolder(val view: View) : RecyclerView.ViewHolder(view) {
-    fun bind(movie: Movie, position: Int) = with(view) {
+  inner class MovieHolder(val binding: ItemMovieSearchBinding) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(movie: Movie, position: Int) = with(binding.root) {
       searchTitleTextView.text = movie.title
       searchReleaseDateTextView.text = movie.releaseDate
-      view.setOnClickListener { listener(movies?.get(position)) }
+      binding.root.setOnClickListener { listener(movies?.get(position)) }
       if (movie.posterPath != null)
         Picasso.get().load(RetrofitClient.TMDB_IMAGEURL + movie.posterPath).into(searchImageView)
       else {

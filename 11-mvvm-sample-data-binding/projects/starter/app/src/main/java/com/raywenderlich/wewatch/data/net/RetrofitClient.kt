@@ -41,7 +41,7 @@ class RetrofitClient {
   private val moviesApi: MoviesApi
 
   companion object {
-    private const val API_KEY = ""
+    private const val API_KEY = "61b71f23125e3e27279916a839dac496"
     private const val TMDB_BASE_URL = "http://api.themoviedb.org/3/"
     const val TMDB_IMAGEURL = "https://image.tmdb.org/t/p/w500/"
   }
