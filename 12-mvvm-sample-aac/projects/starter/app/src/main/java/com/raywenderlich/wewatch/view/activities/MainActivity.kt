@@ -31,12 +31,16 @@
 package com.raywenderlich.wewatch.view.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.raywenderlich.wewatch.R
 import com.raywenderlich.wewatch.view.adapters.MovieListAdapter
+import com.raywenderlich.wewatch.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_view_custom_layout.*
 import org.jetbrains.anko.startActivity
@@ -47,15 +51,28 @@ class MainActivity : BaseActivity() {
 
   private val toolbar: Toolbar by lazy { toolbar_toolbar_view as Toolbar }
   private val adapter = MovieListAdapter(mutableListOf())
+  private lateinit var viewModel: MainViewModel
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     moviesRecyclerView.adapter = adapter
+    viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+    showLoading()
+    viewModel.getSavedMovies().observe(this, Observer { movies ->
+      Log.d(MainActivity::class.simpleName, "onCreate: ")
+      hideLoading()
+      movies?.let {
+        adapter.setMovies(movies)
+      }
+    })
   }
 
   //TODO Implement delete
   private fun deleteMoviesClicked() {
+    for (movie in adapter.selectedMovies) {
+      viewModel.deleteSavedMovies(movie)
+    }
   }
 
   private fun showLoading() {

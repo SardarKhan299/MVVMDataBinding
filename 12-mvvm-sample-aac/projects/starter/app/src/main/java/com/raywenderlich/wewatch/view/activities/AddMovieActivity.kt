@@ -33,10 +33,14 @@ package com.raywenderlich.wewatch.view.activities
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import com.raywenderlich.wewatch.R
 import com.raywenderlich.wewatch.action
+import com.raywenderlich.wewatch.data.model.Movie
 import com.raywenderlich.wewatch.snack
+import com.raywenderlich.wewatch.viewmodel.AddViewModel
 import kotlinx.android.synthetic.main.activity_add.*
 import kotlinx.android.synthetic.main.toolbar_view_custom_layout.*
 import org.jetbrains.anko.intentFor
@@ -46,6 +50,7 @@ class AddMovieActivity : BaseActivity() {
   private val toolbar: Toolbar by lazy { toolbar_toolbar_view as Toolbar }
 
   override fun getToolbarInstance(): Toolbar? = toolbar
+  private lateinit var viewModel: AddViewModel
 
   fun searchMovieClicked(view: View) {
     if (titleEditText.text.toString().isNotBlank()) {
@@ -57,12 +62,20 @@ class AddMovieActivity : BaseActivity() {
 
   //TODO Implement add
   fun addMovieClicked(view: View) {
+    if (titleEditText.text.toString().isNotBlank()) {
+      viewModel.saveMovie(Movie(
+              title = titleEditText.text.toString(),
+              releaseDate = yearEditText.text.toString()))
+      finish()
+    } else {
+      showMessage(getString(R.string.enter_title))
+    }
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_add)
-
+    viewModel = ViewModelProvider(this).get(AddViewModel::class.java)
   }
 
   private fun showMessage(msg: String) {

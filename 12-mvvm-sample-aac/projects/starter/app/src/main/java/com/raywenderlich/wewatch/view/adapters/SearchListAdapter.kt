@@ -30,6 +30,7 @@
 
 package com.raywenderlich.wewatch.view.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,6 +57,7 @@ class SearchListAdapter(private val movies: MutableList<Movie>,
   }
 
   fun setMovies(movieList: List<Movie>) {
+    Log.d(SearchListAdapter::class.simpleName, "setMovies: ")
     this.movies.clear()
     this.movies.addAll(movieList)
     notifyDataSetChanged()

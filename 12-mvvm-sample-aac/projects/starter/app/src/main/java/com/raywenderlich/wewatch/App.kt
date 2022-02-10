@@ -31,6 +31,8 @@
 package com.raywenderlich.wewatch
 
 import android.app.Application
+import com.raywenderlich.wewatch.data.MovieRepository
+import com.raywenderlich.wewatch.data.MovieRepositoryImpl
 import com.raywenderlich.wewatch.data.db.MovieDatabase
 
 lateinit var db: MovieDatabase
@@ -49,4 +51,5 @@ class App : Application() {
     super.onCreate()
     db = MovieDatabase.getInstance(this)
   }
+  fun getMovieRepository(): MovieRepository = MovieRepositoryImpl()
 }

@@ -33,12 +33,15 @@ package com.raywenderlich.wewatch.view.activities
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.raywenderlich.wewatch.R
 import com.raywenderlich.wewatch.action
 import com.raywenderlich.wewatch.data.model.Movie
 import com.raywenderlich.wewatch.snack
 import com.raywenderlich.wewatch.view.adapters.SearchListAdapter
+import com.raywenderlich.wewatch.viewmodel.SearchViewModel
 import kotlinx.android.synthetic.main.activity_search.*
 import kotlinx.android.synthetic.main.toolbar_view_custom_layout.*
 import org.jetbrains.anko.clearTask
@@ -50,6 +53,7 @@ class SearchMovieActivity : BaseActivity() {
   private val toolbar: Toolbar by lazy { toolbar_toolbar_view as Toolbar }
   private var adapter = SearchListAdapter(mutableListOf()) { movie -> displayConfirmation(movie) }
   private lateinit var title: String
+  private lateinit var viewModel: SearchViewModel
 
   override fun getToolbarInstance(): Toolbar? = toolbar
 
@@ -60,6 +64,19 @@ class SearchMovieActivity : BaseActivity() {
       title = it
     }
     searchRecyclerView.adapter = adapter
+    viewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
+    searchMovie()
+  }
+  private fun searchMovie() {
+    showLoading()
+    viewModel.searchMovie(title).observe(this, Observer { movies ->
+      hideLoading()
+      if (movies == null) {
+        showMessage()
+      } else {
+        adapter.setMovies(movies)
+      }
+    })
   }
 
   private fun showLoading() {
@@ -75,6 +92,7 @@ class SearchMovieActivity : BaseActivity() {
   private fun showMessage() {
     searchLayout.snack(getString(R.string.network_error), Snackbar.LENGTH_INDEFINITE) {
       action(getString(R.string.ok)) {
+        searchMovie()
       }
     }
   }
@@ -82,6 +100,7 @@ class SearchMovieActivity : BaseActivity() {
   private fun displayConfirmation(movie: Movie) {
     searchLayout.snack("Add ${movie.title} to your list?", Snackbar.LENGTH_LONG) {
       action(getString(R.string.ok)) {
+        viewModel.saveMovie(movie)
         startActivity(intentFor<MainActivity>().newTask().clearTask())
       }
     }
