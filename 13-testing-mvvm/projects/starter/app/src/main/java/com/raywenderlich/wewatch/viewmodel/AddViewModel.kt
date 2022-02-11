@@ -28,8 +28,9 @@ class AddViewModel(private val repository: MovieRepository = MovieRepositoryImpl
 
   fun canSaveMovie(): Boolean {
     val title = this.title.get()
-    title?.let {
-      return title.isNotEmpty()
+    val releaseDate = this.releaseDate.get()
+    if(title!=null && releaseDate!=null){
+      return title.isNotEmpty() && releaseDate.isNotEmpty()
     }
     return false
   }
